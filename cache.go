@@ -3,10 +3,10 @@ package cache
 import "time"
 
 type Cache interface {
-	Get(key string) (interface{}, error)
+	Get(key string) *Result
 	Put(key string, value interface{}, expire time.Duration) error
 	Has(key string) bool
-	Remember(key string, fc func() interface{}, expire time.Duration) (interface{}, error)
+	Remember(key string, fc func() interface{}, expire time.Duration) *Result
 	GC() error
 }
 

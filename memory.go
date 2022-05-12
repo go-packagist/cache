@@ -35,14 +35,14 @@ func (s *memoryStore) Put(key string, value interface{}, expire time.Duration) e
 	return nil
 }
 
-func (s *memoryStore) Get(key string) (interface{}, error) {
+func (s *memoryStore) Get(key string) *Result {
 	data, ok := s.data[key]
 
 	if ok {
-		return data.value, nil
+		return &Result{data.value, nil}
 	}
 
-	return nil, errors.New("key not found")
+	return &Result{nil, errors.New("key not found")}
 }
 
 func (s *memoryStore) Has(key string) bool {
@@ -51,7 +51,7 @@ func (s *memoryStore) Has(key string) bool {
 	return ok
 }
 
-func (s *memoryStore) Remember(key string, fc func() interface{}, expire time.Duration) (interface{}, error) {
+func (s *memoryStore) Remember(key string, fc func() interface{}, expire time.Duration) *Result {
 	if !s.Has(key) {
 		s.Put(key, fc(), expire)
 	}

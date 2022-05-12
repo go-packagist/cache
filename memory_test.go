@@ -8,20 +8,19 @@ import (
 
 var memory = NewMemory()
 
-func TestMemory(t *testing.T) {
+func TestMemorySetOrGet(t *testing.T) {
+	// Put
 	memory.Put("a", "aaa", time.Second*1)
-	a, _ := memory.Get("a")
-	assert.Equal(t, "aaa", a)
-	assert.Equal(t, true, memory.Has("a"))
-	assert.Equal(t, false, memory.Has("b"))
 
+	// Get
+	result := memory.Get("a")
+	assert.Equal(t, "aaa", result.Value())
+	assert.Equal(t, "aaa", result.Val)
+	assert.False(t, result.IsError())
+	assert.Equal(t, nil, result.Error())
+
+	// Expire(GC)
 	time.Sleep(time.Second * 2)
-	aa, _ := memory.Get("a")
-	assert.Equal(t, nil, aa)
-
-	b, _ := memory.Remember("b", func() interface{} {
-		return "bbb"
-	}, time.Second*1)
-	assert.Equal(t, true, memory.Has("b"))
-	assert.Equal(t, "bbb", b)
+	assert.Equal(t, nil, memory.Get("a").Value())
+	assert.True(t, memory.Get("a").IsError())
 }

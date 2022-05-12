@@ -1,5 +1,12 @@
 # cache
 
+## TODO
+
+- [x] Memory
+- [ ] Redis
+- [ ] Memcached
+- [ ] FileSystem
+
 ## Installation
 
 ```bash
@@ -32,7 +39,5 @@ func main() {
 
 	fmt.Println(cache.Store("memory").Get("a"))
 	fmt.Println(cache.Store("memory2").Get("aa"))
-
-	fmt.Println("asdfasdf")
 }
 ```
