@@ -6,6 +6,7 @@
 - [ ] Redis
 - [ ] Memcached
 - [ ] FileSystem
+- [ ] More Function ……
 
 ## Installation
 
