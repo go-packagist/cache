@@ -1,24 +1,23 @@
-package memory
+package cache
 
 import (
 	"errors"
-	"github.com/go-packagist/cache"
 	"time"
 )
 
-type Store struct {
-	data map[string]*Data
+type memoryStore struct {
+	data map[string]*memoryData
 }
 
-type Data struct {
+type memoryData struct {
 	key    string
 	value  interface{}
 	expire time.Time
 }
 
-func New() cache.Cache {
-	store := &Store{
-		data: make(map[string]*Data),
+func NewMemory() Cache {
+	store := &memoryStore{
+		data: make(map[string]*memoryData),
 	}
 
 	store.GC()
@@ -26,8 +25,8 @@ func New() cache.Cache {
 	return store
 }
 
-func (s *Store) Put(key string, value interface{}, expire time.Duration) error {
-	s.data[key] = &Data{
+func (s *memoryStore) Put(key string, value interface{}, expire time.Duration) error {
+	s.data[key] = &memoryData{
 		key:    key,
 		value:  value,
 		expire: time.Now().Add(expire),
@@ -36,7 +35,7 @@ func (s *Store) Put(key string, value interface{}, expire time.Duration) error {
 	return nil
 }
 
-func (s *Store) Get(key string) (interface{}, error) {
+func (s *memoryStore) Get(key string) (interface{}, error) {
 	data, ok := s.data[key]
 
 	if ok {
@@ -46,13 +45,13 @@ func (s *Store) Get(key string) (interface{}, error) {
 	return nil, errors.New("key not found")
 }
 
-func (s *Store) Has(key string) bool {
+func (s *memoryStore) Has(key string) bool {
 	_, ok := s.data[key]
 
 	return ok
 }
 
-func (s *Store) Remember(key string, fc func() interface{}, expire time.Duration) (interface{}, error) {
+func (s *memoryStore) Remember(key string, fc func() interface{}, expire time.Duration) (interface{}, error) {
 	if !s.Has(key) {
 		s.Put(key, fc(), expire)
 	}
@@ -60,7 +59,7 @@ func (s *Store) Remember(key string, fc func() interface{}, expire time.Duration
 	return s.Get(key)
 }
 
-func (s *Store) GC() error {
+func (s *memoryStore) GC() error {
 	go func() {
 		for {
 			for key, data := range s.data {
