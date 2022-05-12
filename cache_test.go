@@ -7,7 +7,7 @@ import (
 )
 
 func TestCache(t *testing.T) {
-	Configure("memory", NewMemory())
+	Configure("memory", NewMemoryStore())
 	Store("memory").Put("a", "aaa", time.Second*10)
 
 	assert.Equal(t, "aaa", Store("memory").Get("a").Val)

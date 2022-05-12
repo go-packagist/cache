@@ -15,7 +15,7 @@ type memoryData struct {
 	expire time.Time
 }
 
-func NewMemory() Cache {
+func NewMemoryStore() Cache {
 	store := &memoryStore{
 		data: make(map[string]*memoryData),
 	}
@@ -25,8 +25,8 @@ func NewMemory() Cache {
 	return store
 }
 
-func (s *memoryStore) Put(key string, value interface{}, expire time.Duration) error {
-	s.data[key] = &memoryData{
+func (m *memoryStore) Put(key string, value interface{}, expire time.Duration) error {
+	m.data[key] = &memoryData{
 		key:    key,
 		value:  value,
 		expire: time.Now().Add(expire),
@@ -35,8 +35,8 @@ func (s *memoryStore) Put(key string, value interface{}, expire time.Duration) e
 	return nil
 }
 
-func (s *memoryStore) Get(key string) *Result {
-	data, ok := s.data[key]
+func (m *memoryStore) Get(key string) *Result {
+	data, ok := m.data[key]
 
 	if ok {
 		return &Result{data.value, nil}
@@ -45,26 +45,26 @@ func (s *memoryStore) Get(key string) *Result {
 	return &Result{nil, errors.New("key not found")}
 }
 
-func (s *memoryStore) Has(key string) bool {
-	_, ok := s.data[key]
+func (m *memoryStore) Has(key string) bool {
+	_, ok := m.data[key]
 
 	return ok
 }
 
-func (s *memoryStore) Remember(key string, fc func() interface{}, expire time.Duration) *Result {
-	if !s.Has(key) {
-		s.Put(key, fc(), expire)
+func (m *memoryStore) Remember(key string, fc func() interface{}, expire time.Duration) *Result {
+	if !m.Has(key) {
+		m.Put(key, fc(), expire)
 	}
 
-	return s.Get(key)
+	return m.Get(key)
 }
 
-func (s *memoryStore) GC() error {
+func (m *memoryStore) GC() error {
 	go func() {
 		for {
-			for key, data := range s.data {
+			for key, data := range m.data {
 				if data.expire.Before(time.Now()) {
-					delete(s.data, key)
+					delete(m.data, key)
 				}
 			}
 		}

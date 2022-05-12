@@ -26,8 +26,8 @@ import (
 )
 
 func main() {
-	cache.Configure("memory", cache.NewMemory())
-	cache.Configure("memory2", cache.NewMemory())
+	cache.Configure("memory", cache.NewMemoryStore())
+	cache.Configure("memory2", cache.NewMemoryStore())
 
 	cache.Store("memory").Put("a", "2", time.Second*1)
 	cache.Store("memory2").Put("aa", "2", time.Second*1)
